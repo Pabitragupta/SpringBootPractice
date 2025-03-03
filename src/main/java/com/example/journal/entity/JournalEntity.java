@@ -1,16 +1,25 @@
 package com.example.journal.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class JournalEntity {
 
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
     private String title;
     private String content;
 
-    public long getId() {
+
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -29,4 +38,5 @@ public class JournalEntity {
     public void setTitle(String title) {
         this.title = title;
     }
+
 }
