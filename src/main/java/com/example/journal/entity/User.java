@@ -1,9 +1,8 @@
 package com.example.journal.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import java.util.ArrayList;
@@ -26,9 +25,9 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore  // This prevents infinite recursion by ignoring this field during serialization
     private List<JournalEntity> journalEntries = new ArrayList<>();
 
-    public User(){
-
+    public User() {
     }
 }

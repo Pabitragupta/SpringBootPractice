@@ -45,12 +45,22 @@ public class JournalEntryController {
 
     // Add new Journal into the database
     @PostMapping("/{userName}")
-    public ResponseEntity<JournalEntity> createEntry(@RequestBody JournalEntity journalEntity, @PathVariable String userName) {
+    public ResponseEntity<JournalEntity> createJournalEntry(@RequestBody JournalEntity journalEntity, @PathVariable String userName) {
         try {
-            journalEntryservice.saveEntry(journalEntity, userName);
-            return new ResponseEntity<>(journalEntity, HttpStatus.CREATED);
+            User user = userService.findByUserName(userName);
+
+            if (user != null) {
+                journalEntity.setUser(user);
+                journalEntryservice.saveEntry(journalEntity, userName);
+                return new ResponseEntity<>(journalEntity, HttpStatus.CREATED);
+            }
+            else {
+                // Return NOT_FOUND if user doesn't exist
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         }
-        catch(Exception e){
+        catch (Exception e) {
+            // Return BAD_REQUEST if any error occurs
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

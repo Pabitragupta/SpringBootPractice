@@ -28,10 +28,15 @@ public class JournalEntryService {
 
     //Used to Add the data into the database
     public void saveEntry(JournalEntity journalEntity, String userName) {
-        User user = userService.findByUserName(userName); //used to find the user with the help of userName.
-        JournalEntity saved = journalEntryRepository.save(journalEntity); //Stored it in a local variable.
-        user.getJournalEntries().add(saved); //user is a type of list that is defined in "User" class, and we perform add operation on that arraylist;
-        userService.saveEntry(user); //Here we store the new updated arraylist.
+        // Find the user by userName
+        User user = userService.findByUserName(userName);
+
+        if (user != null) {
+            // Set the user for the journal entry
+            journalEntity.setUser(user);
+            // Save the journal entry in the repository
+            journalEntryRepository.save(journalEntity);
+        }
     }
 
 
