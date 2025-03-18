@@ -1,7 +1,9 @@
 package com.example.journal.controller;
 
 import com.example.journal.entity.JournalEntity;
+import com.example.journal.entity.User;
 import com.example.journal.service.JournalEntryService;
+import com.example.journal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +20,18 @@ public class JournalEntryController {
     @Autowired
     private JournalEntryService journalEntryservice;
 
+
+    @Autowired
+    private UserService userService;
+
+
     // Get all the data into the database
-    @GetMapping
-    public ResponseEntity<List<JournalEntity>> getAll(){
-        List<JournalEntity> allEntity = journalEntryservice.getAll();
+    @GetMapping("/{userName}")
+    public ResponseEntity<List<JournalEntity>> getAllJournalEntriesOfUser(@PathVariable String userName){
+
+        User user = userService.findByUserName(userName); //Here we find the user this is our first priority
+
+        List<JournalEntity> allEntity = user.getJournalEntries();
 
         if(allEntity != null && !allEntity.isEmpty()){
             return new ResponseEntity<>(allEntity, HttpStatus.OK);
@@ -31,11 +41,13 @@ public class JournalEntryController {
         }
     }
 
+
+
     // Add new Journal into the database
-    @PostMapping
-    public ResponseEntity<JournalEntity> createEntry(@RequestBody JournalEntity journalEntity) {
+    @PostMapping("/{userName}")
+    public ResponseEntity<JournalEntity> createEntry(@RequestBody JournalEntity journalEntity, @PathVariable String userName) {
         try {
-            journalEntryservice.saveEntry(journalEntity);
+            journalEntryservice.saveEntry(journalEntity, userName);
             return new ResponseEntity<>(journalEntity, HttpStatus.CREATED);
         }
         catch(Exception e){
@@ -43,11 +55,14 @@ public class JournalEntryController {
         }
     }
 
+
     //Get the data using the Id
 //    @GetMapping("/id/{id}")
 //    public JournalEntity getJournalEntryBYId(@PathVariable int id){
 //        return journalEntryservice.findById(id).orElse(null);
 //    }
+
+
 
     //Get the data using id and return the status code also
     @GetMapping("/id/{id}")
@@ -62,6 +77,8 @@ public class JournalEntryController {
         }
     }
 
+
+
     //Delete the data based on the Id
     @DeleteMapping("/id/{id}")
     public ResponseEntity<?> deleteJournalEntryById(@PathVariable int id){
@@ -69,23 +86,26 @@ public class JournalEntryController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+
+
     //used to update the data into the database
-    @PutMapping("/id/{id}")
-    public ResponseEntity<JournalEntity> updateJournalEntryById(@PathVariable int id, @RequestBody JournalEntity newEntry){
-
-        JournalEntity old = journalEntryservice.findById(id).orElse(null);
-
-        if(old != null){
-            old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle());
-            old.setContent(newEntry.getContent() != null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent());
-
-            journalEntryservice.saveEntry(old);
-            return new ResponseEntity<>(old, HttpStatus.OK);
-        }
-        else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-    }
+//    @PutMapping("/id/{id}")
+//    public ResponseEntity<JournalEntity> updateJournalEntryById(@PathVariable int id, @RequestBody JournalEntity newEntry){
+//
+////        JournalEntity old = journalEntryservice.findById(id).orElse(null);
+////
+////        if(old != null){
+////            old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle());
+////            old.setContent(newEntry.getContent() != null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent());
+////
+////            journalEntryservice.saveEntry(old, user);
+////            return new ResponseEntity<>(old, HttpStatus.OK);
+////        }
+////        else{
+////            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+////        }
+//
+//    }
 }
+
 
