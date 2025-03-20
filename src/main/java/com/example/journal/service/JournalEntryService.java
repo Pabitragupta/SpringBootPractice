@@ -34,11 +34,18 @@ public class JournalEntryService {
         if (user != null) {
             // Set the user for the journal entry
             journalEntity.setUser(user);
+            // Ensure bidirectional relationship
+            user.getJournalEntries().add(journalEntity);
             // Save the journal entry in the repository
             journalEntryRepository.save(journalEntity);
+            // Save the user to persist the new relationship
+            userService.saveEntry(user);
         }
     }
 
+    public void saveEntry(JournalEntity journalEntity) {
+            journalEntryRepository.save(journalEntity);
+    }
 
 
     //used to find the data based on the id
@@ -49,7 +56,11 @@ public class JournalEntryService {
 
 
     //used to delete the data based on the id
-    public void deleteById(int id){
+    public void deleteById(int id, String userName){
+        User user = userService.findByUserName(userName);
+
+        user.getJournalEntries().removeIf(x -> x.getId() == id);
+        userService.saveEntry(user);
         journalEntryRepository.deleteById(id);
     }
 }

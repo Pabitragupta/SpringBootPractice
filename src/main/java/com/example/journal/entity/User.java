@@ -24,9 +24,10 @@ public class User {
     @NonNull
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore  // This prevents infinite recursion by ignoring this field during serialization
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @JsonIgnore
     private List<JournalEntity> journalEntries = new ArrayList<>();
+
 
     public User() {
     }

@@ -90,32 +90,36 @@ public class JournalEntryController {
 
 
     //Delete the data based on the Id
-    @DeleteMapping("/id/{id}")
-    public ResponseEntity<?> deleteJournalEntryById(@PathVariable int id){
-        journalEntryservice.deleteById(id);
+    @DeleteMapping("/{id}/{userName}")
+    public ResponseEntity<?> deleteJournalEntryById(@PathVariable int id, @PathVariable String userName){
+        journalEntryservice.deleteById(id, userName);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 
 
     //used to update the data into the database
-//    @PutMapping("/id/{id}")
-//    public ResponseEntity<JournalEntity> updateJournalEntryById(@PathVariable int id, @RequestBody JournalEntity newEntry){
-//
-////        JournalEntity old = journalEntryservice.findById(id).orElse(null);
-////
-////        if(old != null){
-////            old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle());
-////            old.setContent(newEntry.getContent() != null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent());
-////
-////            journalEntryservice.saveEntry(old, user);
-////            return new ResponseEntity<>(old, HttpStatus.OK);
-////        }
-////        else{
-////            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-////        }
-//
-//    }
+    @PutMapping("/{id}/{userName}")
+    public ResponseEntity<JournalEntity> updateJournalEntryById(
+            @PathVariable int id,
+            @RequestBody JournalEntity newEntry,
+            @PathVariable String userName
+    ){
+
+        JournalEntity old = journalEntryservice.findById(id).orElse(null);
+
+        if(old != null){
+            old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle());
+            old.setContent(newEntry.getContent() != null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent());
+
+            journalEntryservice.saveEntry(old);
+            return new ResponseEntity<>(old, HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+    }
 }
 
 
