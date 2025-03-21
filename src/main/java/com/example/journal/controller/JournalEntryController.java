@@ -25,6 +25,7 @@ public class JournalEntryController {
     private UserService userService;
 
 
+
     // Get all the data into the database
     @GetMapping("/{userName}")
     public ResponseEntity<List<JournalEntity>> getAllJournalEntriesOfUser(@PathVariable String userName){
@@ -40,6 +41,7 @@ public class JournalEntryController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
 
 
 
@@ -89,12 +91,14 @@ public class JournalEntryController {
 
 
 
+
     //Delete the data based on the Id
     @DeleteMapping("/{id}/{userName}")
     public ResponseEntity<?> deleteJournalEntryById(@PathVariable int id, @PathVariable String userName){
         journalEntryservice.deleteById(id, userName);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
 
 
 

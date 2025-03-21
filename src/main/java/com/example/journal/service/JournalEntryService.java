@@ -3,6 +3,7 @@ package com.example.journal.service;
 import com.example.journal.entity.JournalEntity;
 import com.example.journal.entity.User;
 import com.example.journal.repository.JournalEntryRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,20 +27,28 @@ public class JournalEntryService {
 
 
 
-    //Used to Add the data into the database
-    public void saveEntry(JournalEntity journalEntity, String userName) {
-        // Find the user by userName
-        User user = userService.findByUserName(userName);
 
-        if (user != null) {
-            // Set the user for the journal entry
-            journalEntity.setUser(user);
-            // Ensure bidirectional relationship
-            user.getJournalEntries().add(journalEntity);
-            // Save the journal entry in the repository
-            journalEntryRepository.save(journalEntity);
-            // Save the user to persist the new relationship
-            userService.saveEntry(user);
+    //Used to Add the data into the database
+    @Transactional
+    public void saveEntry(JournalEntity journalEntity, String userName) {
+        try {
+            // Find the user by userName
+            User user = userService.findByUserName(userName);
+
+            if (user != null) {
+                // Set the user for the journal entry
+                journalEntity.setUser(user);
+                // Ensure bidirectional relationship
+                user.getJournalEntries().add(journalEntity);
+                // Save the journal entry in the repository
+                journalEntryRepository.save(journalEntity);
+                // Save the user to persist the new relationship
+                userService.saveEntry(user);
+            }
+        }
+        catch (Exception e){
+            System.out.println(e);
+            throw new RuntimeException("An error occurs while saving the entry,", e);
         }
     }
 
