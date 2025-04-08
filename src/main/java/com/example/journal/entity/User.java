@@ -1,9 +1,9 @@
 package com.example.journal.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +24,22 @@ public class User {
     @NonNull
     private String password;
 
+
+//    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+//    @JsonIgnore
+//    @ToString.Exclude
+//    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    @JsonIgnore
+    @JsonManagedReference
     private List<JournalEntity> journalEntries = new ArrayList<>();
 
 
+
+    private List<String> roles;
+
     public User() {
-        //Default constructor
+        // Default constructor
     }
+
+
 }

@@ -1,5 +1,7 @@
 package com.example.journal.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,9 +17,17 @@ public class JournalEntity {
 
     @NonNull
     private String title;
+
     private String content;
 
+//    @ManyToOne
+//    @JoinColumn(name = "user_id", nullable = false)
+//    @JsonIgnore
+//    @ToString.Exclude
+//    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;  // Many journal entries belong to one user
+    @JsonBackReference
+    private User user;
+
 }

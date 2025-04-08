@@ -16,7 +16,7 @@ public class JournalApplication {
 
 
 
-//To configure the transaction we create a bean of but in mysql the configuration is automatically created
+//To configure the transaction we create a bean, but in mysql the configuration is automatically created
 ////PlatformTransactionManager
 //And also use the class which had all the transaction
 ////DataSourceTransactionManager
