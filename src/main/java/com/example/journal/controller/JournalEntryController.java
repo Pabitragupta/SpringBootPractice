@@ -127,25 +127,27 @@ public class JournalEntryController {
 
 
     //used to update the data into the database
-    @PutMapping("/{id}/{userName}")
-    public ResponseEntity<JournalEntity> updateJournalEntryById(
-            @PathVariable int id,
-            @RequestBody JournalEntity newEntry,
-            @PathVariable String userName
-    ){
+    @PutMapping("id/{id}")
+    public ResponseEntity<JournalEntity> updateJournalEntryById(@PathVariable int id, @RequestBody JournalEntity newEntry){
 
-        JournalEntity old = journalEntryservice.findById(id).orElse(null);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
 
-        if(old != null){
-            old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle());
-            old.setContent(newEntry.getContent() != null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent());
+        User user = userService.findByUserName(userName);
+        List<JournalEntity> collect = user.getJournalEntries().stream().filter(x -> x.getId() == id).collect(Collectors.toList());
 
-            journalEntryservice.saveEntry(old);
-            return new ResponseEntity<>(old, HttpStatus.OK);
+        if(!collect.isEmpty()){
+            JournalEntity old = journalEntryservice.findById(id).orElse(null);
+
+            if(old != null){
+                old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle());
+                old.setContent(newEntry.getContent() != null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent());
+
+                journalEntryservice.saveEntry(old);
+                return new ResponseEntity<>(old, HttpStatus.OK);
+            }
         }
-        else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
 
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
