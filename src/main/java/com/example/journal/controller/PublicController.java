@@ -16,7 +16,7 @@ public class PublicController {
     //To add the data into the database
     @PostMapping
     public User createUser(@RequestBody User user){
-        return userService.saveEntry(user);
+        return userService.saveNewEntry(user);
     }
 
 }

@@ -25,13 +25,13 @@ public class User {
     private String password;
 
 
-//    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-//    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @JsonIgnore
+    private List<JournalEntity> journalEntries = new ArrayList<>();
 //    @ToString.Exclude
 //    @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    @JsonManagedReference
-    private List<JournalEntity> journalEntries = new ArrayList<>();
+//    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+//    @JsonManagedReference
 
 
 

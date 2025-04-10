@@ -43,7 +43,7 @@ public class JournalEntryService {
                 // Save the journal entry in the repository
                 journalEntryRepository.save(journalEntity);
                 // Save the user to persist the new relationship
-                userService.saveEntry(user);
+                userService.saveUser(user);
             }
         }
         catch (Exception e){
@@ -52,9 +52,12 @@ public class JournalEntryService {
         }
     }
 
+
+
     public void saveEntry(JournalEntity journalEntity) {
-            journalEntryRepository.save(journalEntity);
+        journalEntryRepository.save(journalEntity);
     }
+
 
 
     //used to find the data based on the id
@@ -65,11 +68,22 @@ public class JournalEntryService {
 
 
     //used to delete the data based on the id
-    public void deleteById(int id, String userName){
-        User user = userService.findByUserName(userName);
+    @Transactional
+    public boolean deleteById(int id, String userName){
+        boolean removed = false;
+        try {
+            User user = userService.findByUserName(userName);
+            removed = user.getJournalEntries().removeIf(x -> x.getId() == id);
+            if(removed){
+                userService.saveUser(user);
+                journalEntryRepository.deleteById(id);
+            }
+        }
+        catch (Exception e){
+            System.out.println(e);
+            throw new RuntimeException("An error occurs while deleting the entity.", e);
+        }
 
-        user.getJournalEntries().removeIf(x -> x.getId() == id);
-        userService.saveEntry(user);
-        journalEntryRepository.deleteById(id);
+        return removed;
     }
 }

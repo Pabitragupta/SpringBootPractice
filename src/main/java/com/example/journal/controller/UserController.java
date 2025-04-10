@@ -29,7 +29,7 @@ public class UserController {
         oldUser.setUserName(newUser.getUserName());
         oldUser.setPassword(newUser.getPassword());
 
-        userService.saveEntry(oldUser);  // This re-encodes password and saves
+        userService.saveNewEntry(oldUser);  // This re-encodes password and saves
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

@@ -20,14 +20,14 @@ public class JournalEntity {
 
     private String content;
 
-//    @ManyToOne
+    //    @ManyToOne
 //    @JoinColumn(name = "user_id", nullable = false)
-//    @JsonIgnore
+//    @JsonBackReference
 //    @ToString.Exclude
 //    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnore
     private User user;
 
 }

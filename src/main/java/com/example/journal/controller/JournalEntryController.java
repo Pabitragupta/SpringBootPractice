@@ -7,10 +7,13 @@ import com.example.journal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -26,9 +29,12 @@ public class JournalEntryController {
 
 
 
-    // Get all the data into the database
-    @GetMapping("/{userName}")
-    public ResponseEntity<List<JournalEntity>> getAllJournalEntriesOfUser(@PathVariable String userName){
+    // Get all the data into the database base on a particular user
+    @GetMapping
+    public ResponseEntity<List<JournalEntity>> getAllJournalEntriesOfUser(){
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
 
         User user = userService.findByUserName(userName); //Here we find the user this is our first priority
 
@@ -45,10 +51,13 @@ public class JournalEntryController {
 
 
 
-    // Add new Journal into the database
-    @PostMapping("/{userName}")
-    public ResponseEntity<JournalEntity> createJournalEntry(@RequestBody JournalEntity journalEntity, @PathVariable String userName) {
+    // Add new Journal into the database base on the login user
+    @PostMapping
+    public ResponseEntity<JournalEntity> createJournalEntry(@RequestBody JournalEntity journalEntity) {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String userName = auth.getName();
+
             User user = userService.findByUserName(userName);
 
             if (user != null) {
@@ -79,24 +88,39 @@ public class JournalEntryController {
     //Get the data using id and return the status code also
     @GetMapping("/id/{id}")
     public ResponseEntity<JournalEntity> getJournalEntryById(@PathVariable int id){
-        Optional<JournalEntity> journalEntry = journalEntryservice.findById(id);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
 
-        if(journalEntry.isPresent()){
-            return new ResponseEntity<>(journalEntry.get(), HttpStatus.OK);
+        User user = userService.findByUserName(userName);
+        List<JournalEntity> collect = user.getJournalEntries().stream().filter(x -> x.getId() == id).collect(Collectors.toList());
+
+        if(!collect.isEmpty()){
+            Optional<JournalEntity> journalEntry = journalEntryservice.findById(id);
+
+            if(journalEntry.isPresent()){
+                return new ResponseEntity<>(journalEntry.get(), HttpStatus.OK);
+            }
         }
-        else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 
 
 
     //Delete the data based on the Id
-    @DeleteMapping("/{id}/{userName}")
-    public ResponseEntity<?> deleteJournalEntryById(@PathVariable int id, @PathVariable String userName){
-        journalEntryservice.deleteById(id, userName);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping("id/{id}")
+    public ResponseEntity<?> deleteJournalEntryById(@PathVariable int id){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+        boolean remove = journalEntryservice.deleteById(id, userName);
+        if(remove){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
     }
 
 
@@ -125,5 +149,3 @@ public class JournalEntryController {
 
     }
 }
-
-

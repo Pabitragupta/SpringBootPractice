@@ -37,10 +37,14 @@ public class UserService {
 
 
     //Used to Add the data into the database
-    public User saveEntry(User user) {
+    public User saveNewEntry(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Arrays.asList("USER"));
         return userRepository.save(user);
+    }
+
+    public void saveUser(User user){
+        userRepository.save(user);
     }
 
 
